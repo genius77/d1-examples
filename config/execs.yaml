@@ -1,0 +1,34 @@
+# ============================================================
+# 即调即走任务配置（可选，不配置则无任务功能）
+# ============================================================
+
+# 任务可执行文件根目录
+path: "./execs"
+
+# 默认最大并发数
+max_concurrent: 5
+
+# 默认输入大小限制
+max_input_size: "1MB"
+
+# 默认输出大小限制
+max_output_size: "10MB"
+
+# 任务列表
+items:
+  - name: "data_converter"
+    command: "./data_converter"
+    args: ["--format", "json"]
+    max_concurrent: 3
+    max_input_size: "2MB"
+
+  - name: "status_check"
+    command: "./status_check"
+
+  - name: "default_handler"
+    command: "./default_handler.sh"
+    max_concurrent: 10
+
+  - name: "backup"
+    command: "./backup.sh"
+    args: ["--compress"]

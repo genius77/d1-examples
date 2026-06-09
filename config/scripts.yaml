@@ -1,0 +1,52 @@
+# ============================================================
+# 脚本配置（可选，不配置则无脚本功能）
+# ============================================================
+
+# 脚本语言: js / lua，缺省=js（目前仅实现 js）
+language: "js"
+
+# 脚本文件根目录（相对于 D1 rootDir）
+path: "./scripts"
+
+# 全局入口函数名，缺省="main"
+# 各脚本 item 可覆盖此配置
+entry: "main"
+
+# VM 池最小数量（预热），0=不预热（每次动态创建）
+pool_min_size: 3
+
+# VM 池最大数量（上限），0=不限制
+# 必须 >= pool_min_size，建议 pool_max_size = pool_min_size * 2 ~ 3
+pool_max_size: 10
+
+# 引擎专属配置（均为可选，缺省使用 goja 原生默认值）
+# setting:
+#   max_call_stack_size: 1000    # Goja 调用栈深度限制（缺省=MaxInt32，即不限制）
+
+# 脚本列表
+# path 支持三种形式：
+# 1. 缺省: {script.path}/{name}.{language} → ./scripts/temp_alert.js
+# 2. 相对路径: 相对于 script.path，如 "custom/temp_alert.js" → ./scripts/custom/temp_alert.js
+# 3. 绝对路径: 直接使用，如 "/opt/d1/scripts/temp_alert.js"
+# 最终都转换为绝对路径存储
+#
+# entry: 入口函数名，缺省使用全局 entry 配置
+# preload: 是否预加载+编译缓存，缺省 false
+#   - true:  启动时编译并缓存，compiled map 持有，执行快
+#   - false: 首次执行时加载，按需编译
+items:
+  - name: "temp_alert"
+    # path 缺省: 自动使用 ./scripts/temp_alert.js
+    preload: true   # 预加载，启动时编译缓存
+
+  - name: "api_handler"
+    # 相对路径示例: 相对于 script.path
+    path: "handlers/api_handler.js"
+    # preload 缺省 false，首次执行时加载
+
+  - name: "data_processor"
+    # 绝对路径示例
+    path: "/opt/d1/scripts/data_processor.js"
+    preload: true
+    # entry 覆盖全局配置
+    entry: "process"

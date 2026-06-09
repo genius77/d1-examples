@@ -1,0 +1,27 @@
+# ============================================================
+# 常驻微服务配置（可选，不配置则无微服务功能）
+# ============================================================
+
+# 服务可执行文件根目录
+path: "./services"
+
+# 底座 gRPC 端口（供服务回调）
+d1_port: 9090
+
+# 服务列表
+items:
+  - name: "cache_service"
+    command: "./cache_service"
+    args: ["--config", "./config.yaml"]
+    log:
+      level: "info"
+
+  - name: "rule_engine"
+    command: "./rule_engine"
+    log:
+      level: "debug"
+    setting:
+      rule_file: "./rules.json"
+
+  - name: "health_check"
+    command: "./health_check"

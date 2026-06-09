@@ -1,0 +1,73 @@
+# ============================================================
+# 路由规则配置
+# ============================================================
+# 按 connName 分组，每组内按数组顺序匹配（顺序即优先级）
+#
+# 全局配置:
+#   auto_reply - 是否自动回复请求，缺省 true
+#                当为 true 时，handler 执行后自动回复
+#                当为 false 时，handler 需自行调用 Reply 发送响应
+#
+# 字段说明:
+#   pattern    - 消息匹配模式（必填），支持通配符 *（单层）、**（多层）
+#   kind       - 处理器类型（缺省="default"）
+#                "default" - 宿主程序回调（引用 D1 库的主应用程序）
+#                "conn"    - 通过 conn 驱动发往外部第三方程序
+#                "script"  - 内部脚本处理
+#                "service" - 内部微服务处理
+#                "exec"    - 本地命令执行
+#   target     - 目标名称（缺省="master"）
+#                kind=default: 宿主程序目标标识（由宿主程序解释）
+#                kind=conn:    conn 实例名（对应 connector.yaml 中的 name）
+#                kind=script:  脚本名（对应 scripts.yaml 中的 name）
+#                kind=service: 服务名
+#                kind=exec:    执行器名
+#   auto_reply - 是否自动回复（可选），缺省使用全局配置
+#
+# 通配符:
+#   *  - 单层通配
+#   ** - 多层通配
+#
+# 注意: connName 必须与 connector.yaml 中的实例名一致
+# ============================================================
+
+# 全局配置
+auto_reply: true
+
+# 路由规则
+rules:
+  # ====== HTTP API 路由 ======
+  http_server:
+    - pattern: "/api/v1/cache/**"
+      kind: service
+      target: cache_service
+    - pattern: "/api/v1/script/**"
+      kind: script
+      target: api_handler
+    - pattern: "/api/v1/health"
+      kind: service
+      target: health_check
+
+  # ====== MQTT 设备数据路由 ======
+  mqtt_client:
+    - pattern: "device/*/temperature"
+      kind: script
+      target: temp_alert
+    - pattern: "device/*/humidity"
+      kind: service
+      target: humidity_processor
+    - pattern: "device/*/*/status"
+      kind: exec
+      target: status_check
+
+  # ====== Modbus 路由 ======
+  modbus_rtu:
+    - pattern: "slave:1/register:40001"
+      kind: script
+      target: temp_processor
+    - pattern: "slave:2/register:40001"
+      kind: service
+      target: pressure_processor
+    - pattern: "*"
+      kind: exec
+      target: default_handler

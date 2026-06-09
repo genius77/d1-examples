@@ -1,0 +1,138 @@
+# ============================================================
+# 通信驱动配置（comm.yaml）
+# ============================================================
+#
+# CommManager 通过此配置管理所有通信驱动实例。
+# 每个实例对应一个协议驱动（如 MQTT、Modbus、HTTP 等）。
+#
+# 生命周期：
+#   Init(configPath)  → 解析配置，创建所有实例（Init）
+#   Start()           → 逐个启动连接（按配置顺序），无论 enabled 均启动
+#
+# enabled 是数据通路开关（非生命周期开关）：
+#   - true  = 正常收发数据，数据回调给上层
+#   - false = 连接保持，但不回调数据给上层，上层 Publish 到此实例也被拒绝
+#   运行时通过 SetCommEnabled(name, true/false) 动态切换，无需重连
+#
+# 运行时管理（通过 Admin API）：
+#   SetCommEnabled(name, true/false)  → 打开/关闭数据通路
+#   GetCommInfo(name)                 → 查询实例状态
+#   GetCommInfoList()                 → 列出所有实例
+
+# 动态库存放目录（dl_driver 加载 .so/.dll 时的搜索路径）
+path: "./drivers"
+
+# 注意：本地实例标识已从本配置移除，移至 d1.yaml 的 name 字段
+# D1 使用 d1.yaml 中的 name 作为 local_identity 来区分不同实例
+
+# ============================================================
+# 全局缺省请求超时（秒）
+# ============================================================
+# Request/RequestAsync 等待回复的缺省超时时间。
+# 优先级: 业务传入 timeout > 实例级 request_timeout > default_request_timeout
+# 类型: int（秒）
+# 默认值: 120
+# ============================================================
+request_timeout: 120
+
+# 驱动实例列表（按顺序启动，name 全局唯一）
+drivers:
+
+  # ----- 内置 HTTP/WebSocket 驱动 -----
+  - name: "http_server"        # 实例名称（全局唯一，回调时用此标识）
+    library: "builtin:http"    # 驱动来源："builtin:xxx"=内置, 其他值=动态库文件名
+    enabled: true              # true=数据通路开启，false=连接保持但数据不通
+    ignore_failure: false      # true=启动失败时跳过，不影响其他实例
+    request_timeout: 30        # 实例级请求超时（秒），0=使用全局 default_request_timeout
+    log:                       # 实例独立日志（可选，缺省继承全局日志配置）
+      level: "info"            # 日志级别：debug/info/warn/error/off
+      path: "./logs/http"      # 日志目录（文件名自动为 {name}.log）
+    setting:                   # HTTP 驱动配置（代码层有缺省值，可选）
+      # 基础（必填）
+      # port: 8080             # 监听端口，缺省 8080
+      # host: "0.0.0.0"       # 监听地址，缺省 "0.0.0.0"
+      
+      # HTTP 参数（可缺省，代码层有缺省值）
+      # read_timeout: 30       # 读取超时(秒)，缺省 30
+      # write_timeout: 30      # 写入超时(秒)，缺省 30
+      # max_recv_size: 0       # 最大接收数据(字节)，0=无限制
+                              # 推荐值: IoT场景 1048576(1MB), 高吞吐 10485760(10MB)
+      # response_timeout: 30   # HTTP 响应超时(秒)，缺省 30
+
+      # WebSocket（嵌套配置，enabled 显式控制）
+      # ws:
+      #   enabled: false       # 是否启用，默认 false
+      #   read_buffer: 32768   # 读缓冲区(字节)，默认 32768
+      #   write_buffer: 32768  # 写缓冲区(字节)，默认 32768
+      #   max_connections: 0   # 最大连接数，0=无限制
+      #   idle_timeout: 60     # 空闲超时(秒)，默认 60，超过此时间没收到消息则断开
+      #   enable_ping: false   # 启用主动 ping，默认 false，启用后超时发 ping 等 pong
+
+      # TLS（嵌套配置，enabled 显式控制）
+      # tls:
+      #   enabled: false      # 是否启用 TLS，默认 false
+      #   cert: ""            # TLS 证书文件路径（启用时必须配置）
+      #   key: ""             # TLS 私钥文件路径（启用时必须配置）
+      # 注意：以下配置修改后需要重启才能生效：port, host, read_timeout, write_timeout, ws.enabled, ws.idle_timeout, ws.enable_ping, tls, ws.max_connections
+      # 以下配置可热更新：max_recv_size, response_timeout, ws.read_buffer, ws.write_buffer
+
+  # ----- MQTT 动态库驱动 -----
+  - name: "mqtt_client"
+    library: "libmqtt_driver"  # 动态库文件名（需要包含完整文件名和后缀）
+    enabled: true
+    ignore_failure: true       # MQTT 启动失败时继续加载其他驱动
+    log:
+      level: "debug"
+      path: "./logs/mqtt"
+    setting:                   # 配置透传给驱动，结构和含义见对应驱动文档
+      broker: "tcp://localhost:1883"
+      client_id: "d1_gateway"
+      username: ""
+      password: ""
+      topics:
+        - "/device/+/data"
+        - "/system/status"
+      qos: 1
+      keepalive: 60
+
+  # ----- Modbus RTU 动态库驱动 -----
+  - name: "modbus_rtu"
+    library: "libmodbus_driver"
+    enabled: true
+    ignore_failure: true
+    log:
+      level: "info"
+      path: "./logs/modbus"
+    setting:
+      device: "/dev/ttyUSB0"
+      baud: 9600
+      data_bits: 8
+      stop_bits: 1
+      parity: "none"
+      timeout: "5s"
+      slaves:
+        - id: 1
+          registers:
+            - address: 40001
+              name: "temperature"
+              type: "float32"
+            - address: 40003
+              name: "humidity"
+              type: "float32"
+        - id: 2
+          registers:
+            - address: 40001
+              name: "pressure"
+              type: "float32"
+
+  # ----- 禁用的驱动（连接已建立但数据不通，可通过 Admin API 动态开启通路）-----
+  - name: "custom_driver"
+    library: "libcustom_driver"
+    enabled: false             # false=连接保持但数据不通，SetCommEnabled 可运行时切换
+    ignore_failure: false
+    log:
+      level: "off"             # off=关闭日志输出
+      path: "./logs/custom"
+    setting:
+      param1: "value1"
+      param2: 100
