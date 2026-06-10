@@ -6,6 +6,21 @@
 
 ---
 
+## [0.2.0] — 2026-06-10
+
+### 变更
+- **项目重命名**: `d1-examples` → `d1-sdk`
+- **目录重命名**: `sdk/` → `lang/`
+- **API 变更**: 移除 `Wait()`，新增 `WaitStop()`（与 D1 ≥ v1.2.0 对齐）
+- **命名统一**: 配置文件 `scripts.yaml`/`execs.yaml`/`services.yaml` → 单数形式
+- **工程化**: 引入 `project-workflow` submodule 作为版本管理规范
+- **示例完善**: C++/C#/Java 示例统一使用 `WaitStop()` 简化流程
+
+### 依赖
+- 对应 D1 动态库版本: **≥ v1.2.0**
+
+---
+
 ## [0.1.0] — 2026-06-09
 
 ### 新增 ✨
@@ -44,4 +59,5 @@
 
 ---
 
+[0.2.0]: https://github.com/genius77/d1-sdk/releases/tag/v0.2.0
 [0.1.0]: https://github.com/genius77/d1-sdk/releases/tag/v0.1.0

@@ -1,5 +1,5 @@
 /*
- * D1 SDK C 头文件 | 对应 D1 动态库版本: ≥ v1.1.0
+ * D1 SDK C 头文件 | 对应 D1 动态库版本: ≥ v1.2.0
  *
  * 本文件定义了 D1 动态库的完整 C 语言 API。
  * 使用前请确保已将 libd1.so (Linux) / libd1.dylib (macOS) / d1.dll (Windows)

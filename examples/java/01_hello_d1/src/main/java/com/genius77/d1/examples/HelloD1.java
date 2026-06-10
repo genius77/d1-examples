@@ -1,87 +1,66 @@
-// D1 Java 入门示例: Hello D1
-// 演示 D1 SDK 基本生命周期:
-//   1. 打印版本号
-//   2. 初始化 D1 (使用默认配置)
-//   3. 启动 D1 运行时
-//   4. 设置默认请求处理器
-//   5. 等待用户输入以保持运行
-//   6. 停止 D1 并退出
+// D1 Java Hello D1 Example
+// Demonstrates D1 SDK basic lifecycle:
+//   1. Print version
+//   2. Initialize D1 (default config)
+//   3. Set default request handler
+//   4. Start D1 runtime
+//   5. Block until exit signal (WaitStop built-in signal handling + auto stop)
 //
-// 运行前提: 确保 D1 动态库已放入 deps/ 目录。
+// D1 dynamic library dependency: >= v1.2.0
+//
+// Prerequisite: Place D1 dynamic library into deps/ directory.
 
 package com.genius77.d1.examples;
 
 import com.genius77.d1.D1;
 
-/**
- * D1 Java 入门示例程序。
- * <p>
- * 构建: mvn package<br>
- * 运行: mvn exec:java -Dexec.mainClass="com.genius77.d1.examples.HelloD1"
- * </p>
- */
 public class HelloD1 {
 
     public static void main(String[] args) {
-        System.out.println("=== D1 Java 入门示例: Hello D1 ===");
+        System.out.println("=== D1 Java Hello D1 ===");
 
         try {
-            // -------------------------------------------------------
-            // 1. 获取并打印 D1 动态库版本号
-            // -------------------------------------------------------
+            // 1. Get and print D1 library version
             String version = D1.version();
-            System.out.println("D1 动态库版本: " + version);
+            System.out.println("D1 version: " + version);
 
-            // -------------------------------------------------------
-            // 2. 使用默认配置初始化 D1 运行时
-            //    传入 null 表示使用默认配置（从 deps/ 目录读取）
-            // -------------------------------------------------------
+            // 2. Initialize D1 with default config
+            //    Pass null to read default config from deps/ directory
             D1.init(null);
-            System.out.println("D1 初始化成功");
+            System.out.println("D1::init() succeeded");
 
-            // -------------------------------------------------------
-            // 3. 启动 D1 运行时
-            // -------------------------------------------------------
-            D1.start();
-            System.out.println("D1 启动成功");
-
-            // -------------------------------------------------------
-            // 4. 设置默认请求处理器
-            //    所有未被路由匹配的请求都会回调此处理器
-            // -------------------------------------------------------
+            // 3. Set default request handler
+            //    All unmatched requests will be routed to this handler
             D1.setDefaultHandler((taskId, msgName, payload) -> {
-                System.out.println("[默认处理器] 收到请求: taskId=" + taskId +
+                System.out.println("[Handler] taskId=" + taskId +
                         ", msgName=" + msgName + ", payload=" + payload);
 
-                // 构造响应
-                String response = "{\"message\":\"Hello from Java D1 SDK!\",\"taskId\":" + taskId + "}";
-                System.out.println("回复请求: " + response);
+                // Build response
+                String response = "{\"status\":\"ok\",\"msg\":\"hello from Java handler\",\"taskId\":" + taskId + "}";
+                System.out.println("Reply: " + response);
 
-                // [0]=响应负载, [1]=错误信息(null表示无), [2]=返回码(0表示成功)
+                // [0]=response payload, [1]=error (null means none), [2]=return code (0=success)
                 return new Object[]{response, null, 0};
             });
-            System.out.println("已注册默认请求处理器");
+            System.out.println("Default handler registered");
 
-            // -------------------------------------------------------
-            // 5. 等待用户输入，保持进程运行
-            // -------------------------------------------------------
-            System.out.println("\n按 Enter 键退出...");
-            System.in.read();
+            // 4. Start D1 runtime
+            D1.start();
+            System.out.println("D1::start() succeeded");
 
-            // -------------------------------------------------------
-            // 6. 停止 D1 运行时
-            // -------------------------------------------------------
-            D1.stop();
-            System.out.println("D1 已停止");
-
-            System.out.println("程序退出");
+            // 5. Block until exit signal, auto stop
+            //    D1::waitStop() internally listens for SIGINT/SIGTERM (Ctrl+C),
+            //    and automatically calls D1::stop() for graceful shutdown
+            System.out.println("D1 running, press Ctrl+C to exit...");
+            D1.waitStop();
+            System.out.println("D1 fully stopped, exiting.");
 
         } catch (D1.D1Exception e) {
-            System.out.println("\nD1 操作异常: " + e.getMessage());
-            System.out.println("错误码: " + e.getErrorCode() + ", 函数名称: " + e.getFunctionName());
+            System.out.println("D1 error: " + e.getMessage());
+            System.out.println("ErrorCode: " + e.getErrorCode() + ", Function: " + e.getFunctionName());
             System.exit(1);
         } catch (Exception e) {
-            System.out.println("\n未处理异常: " + e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             e.printStackTrace(System.out);
             System.exit(1);
         }

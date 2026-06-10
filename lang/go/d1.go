@@ -1,6 +1,6 @@
 // Package d1 提供 D1 动态库的 Go SDK 封装
 //
-// D1 SDK Go 封装 | 对应 D1 动态库版本: >= v1.1.0
+// D1 SDK Go 封装 | 对应 D1 动态库版本: >= v1.2.0
 //
 // 使用前请将 libd1.so / libd1.dylib / d1.dll 及 d1.h 放入 deps/ 目录，
 // 或通过 CGO_CFLAGS / CGO_LDFLAGS 环境变量指定头文件与库文件路径。

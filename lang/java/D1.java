@@ -1,4 +1,4 @@
-// D1 SDK Java 封装 | 对应 D1 动态库版本: ≥ v1.1.0
+// D1 SDK Java 封装 | 对应 D1 动态库版本: ≥ v1.2.0
 // 基于 JNA (Java Native Access) 实现跨平台动态库调用。
 //
 // 用法:
