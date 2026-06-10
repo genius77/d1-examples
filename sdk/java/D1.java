@@ -182,7 +182,7 @@ public final class D1 {
         private final String functionName;
 
         D1Exception(int errorCode, String functionName) {
-            super("D1 " + functionName + " 调用失败，错误码: " + errorCode);
+            super("D1 " + functionName + " failed, error code: " + errorCode);
             this.errorCode = errorCode;
             this.functionName = functionName;
         }
@@ -327,14 +327,14 @@ public final class D1 {
             }
 
             StringBuilder msg = new StringBuilder();
-            msg.append("无法加载 D1 动态库。请检查:\n");
-            msg.append("  1. 动态库文件是否已放入 deps/ 目录\n");
-            msg.append("  2. 文件名是否正确: ").append(libName).append("\n");
-            msg.append("  3. 运行时可通过系统属性指定路径: -Djna.library.path=<目录>\n");
+            msg.append("Failed to load D1 native library. Please check:\n");
+            msg.append("  1. Is the library file placed in deps/ directory?\n");
+            msg.append("  2. Is the filename correct: ").append(libName).append("\n");
+            msg.append("  3. Set system property: -Djna.library.path=<directory>\n");
             if (found) {
-                msg.append("  已找到 deps/ 目录但加载失败，请确认库文件存在且架构匹配\n");
+                msg.append("  deps/ found but loading failed. Verify file exists and arch matches\n");
             } else {
-                msg.append("  未找到 deps/ 目录，请确认当前工作目录正确\n");
+                msg.append("  deps/ not found. Verify working directory is correct\n");
             }
             throw new RuntimeException(msg.toString(), e);
         }

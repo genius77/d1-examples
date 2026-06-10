@@ -259,7 +259,7 @@ elif _SYSTEM == "Darwin":
 elif _SYSTEM == "Windows":
     _LIBNAME = "d1.dll"
 else:
-    raise RuntimeError(f"不支持的操作系统: {_SYSTEM}")
+    raise RuntimeError(f"Unsupported OS: {_SYSTEM}")
 
 # SDK 文件所在目录的 deps 路径
 # sdk/python/d1.py -> ../../deps/
@@ -491,7 +491,7 @@ class D1:
             D1Error: 初始化失败。
         """
         if self._initialized:
-            raise D1Error("D1 已经初始化，请勿重复调用 init()")
+            raise D1Error("D1 already initialized")
 
         c_config = None
         if config_path is not None:
@@ -499,7 +499,7 @@ class D1:
 
         ret = _lib.D1_Init(c_config)
         if ret != 0:
-            raise D1Error(f"D1_Init 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Init failed, error code: {ret}", code=ret)
         self._initialized = True
 
     # === 3. Start ===
@@ -511,13 +511,13 @@ class D1:
             D1Error: 尚未初始化或启动失败。
         """
         if not self._initialized:
-            raise D1Error("D1 尚未初始化，请先调用 init()")
+            raise D1Error("D1 not initialized, call init() first")
         if self._started:
-            raise D1Error("D1 已经启动，请勿重复调用 start()")
+            raise D1Error("D1 already started")
 
         ret = _lib.D1_Start()
         if ret != 0:
-            raise D1Error(f"D1_Start 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Start failed, error code: {ret}", code=ret)
         self._started = True
 
     # === 4. Stop ===
@@ -534,7 +534,7 @@ class D1:
         ret = _lib.D1_Stop()
         self._started = False
         if ret != 0:
-            raise D1Error(f"D1_Stop 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Stop failed, error code: {ret}", code=ret)
 
     # === 5. Wait ===
 
@@ -612,7 +612,7 @@ class D1:
             c_uint64(task_id), c_target, c_msg, c_payload, p_len
         )
         if ret != 0:
-            raise D1Error(f"D1_Publish 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Publish failed, error code: {ret}", code=ret)
 
     # === 8. Call ===
 
@@ -712,7 +712,7 @@ class D1:
 
         if ret != 0:
             self._request_cbs.pop(task_id, None)
-            raise D1Error(f"D1_Request 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Request failed, error code: {ret}", code=ret)
 
     # === 10. Reply ===
 
@@ -732,7 +732,7 @@ class D1:
 
         ret = _lib.D1_Reply(c_uint64(task_id), c_msg, c_payload, p_len)
         if ret != 0:
-            raise D1Error(f"D1_Reply 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Reply failed, error code: {ret}", code=ret)
 
     # === 11. CacheGet ===
 
@@ -763,7 +763,7 @@ class D1:
             _lib.D1_Free(result.value)
 
         if ret != 0:
-            raise D1Error(f"D1_CacheGet 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_CacheGet failed, error code: {ret}", code=ret)
 
         return py_result
 
@@ -786,7 +786,7 @@ class D1:
 
         ret = _lib.D1_CacheSet(c_uint64(task_id), c_key, c_val, v_len, c_int(ttl_seconds))
         if ret != 0:
-            raise D1Error(f"D1_CacheSet 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_CacheSet failed, error code: {ret}", code=ret)
 
     # === 13. CacheDelete ===
 
@@ -804,7 +804,7 @@ class D1:
 
         ret = _lib.D1_CacheDelete(c_uint64(task_id), c_key)
         if ret != 0:
-            raise D1Error(f"D1_CacheDelete 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_CacheDelete failed, error code: {ret}", code=ret)
 
     # === 14. DBQuery ===
 
@@ -838,7 +838,7 @@ class D1:
             _lib.D1_Free(result.value)
 
         if ret != 0:
-            raise D1Error(f"D1_DBQuery 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_DBQuery failed, error code: {ret}", code=ret)
 
         return py_result
 
@@ -862,7 +862,7 @@ class D1:
 
         ret = _lib.D1_DBExec(c_uint64(task_id), c_query, c_int(len(c_query)), byref(affected))
         if ret != 0:
-            raise D1Error(f"D1_DBExec 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_DBExec failed, error code: {ret}", code=ret)
 
         return affected.value
 
@@ -884,7 +884,7 @@ class D1:
 
         ret = _lib.D1_Set(c_uint64(task_id), c_key, c_val, v_len)
         if ret != 0:
-            raise D1Error(f"D1_Set 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Set failed, error code: {ret}", code=ret)
 
     # === 17. Get ===
 
@@ -915,7 +915,7 @@ class D1:
             _lib.D1_Free(result.value)
 
         if ret != 0:
-            raise D1Error(f"D1_Get 失败，错误码: {ret}", code=ret)
+            raise D1Error(f"D1_Get failed, error code: {ret}", code=ret)
 
         return py_result
 

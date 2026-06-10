@@ -174,7 +174,7 @@ int D1_Publish(uint64_t task_id,
  *
  * 参数:
  *   task_id:      任务 ID。
- *   kind:         调用类型（如 "rpc"、"query" 等），传 NULL 使用默认类型。
+ *   kind:         处理器类型："default"(宿主程序回调), "conn"(外部第三方), "script"(内部脚本), "service"(微服务), "exec"(本地命令)，传 NULL 使用默认类型。
  *   target:       目标标识符。
  *   msg_name:     消息名称。
  *   payload:      请求载荷。

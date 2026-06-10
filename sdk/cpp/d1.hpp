@@ -311,7 +311,7 @@ public:
      *
      * 参数:
      *   task_id:     任务 ID。
-     *   kind:        调用类型（如 "rpc"），传空字符串使用默认类型。
+     *   kind:        处理器类型："default"/"conn"/"script"/"service"/"exec"，传空字符串使用默认类型。
      *   target:      目标标识符。
      *   msg_name:    消息名称。
      *   payload:     请求载荷。
@@ -338,9 +338,9 @@ public:
             // API 返回错误但没有设置 out_error，合成一个
             CallResult result;
             result.error = Buffer(
-                strdup(("D1_Call 失败，错误码: " + std::to_string(rc))
+                strdup(("D1_Call failed, error code: " + std::to_string(rc))
                            .c_str()),
-                -1); // 使用 D1_Free（但这里用 strdup 需要手动处理，后续实际使用建议自行 malloc）
+                -1); // strdup memory must be freed by D1_Free; consider custom allocator for production
             return result;
         }
 

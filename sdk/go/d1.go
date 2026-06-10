@@ -114,7 +114,7 @@ func goDefaultHandler(
 ) C.int {
 	handler := _defaultHandler
 	if handler == nil {
-		errStr := C.CString("未设置默认消息处理器 (SetDefaultHandler)")
+		errStr := C.CString("no default handler set (SetDefaultHandler)")
 		*outError = errStr
 		return -1
 	}
@@ -198,7 +198,7 @@ func (d *D1) Init(configPath string) error {
 	defer d.mu.Unlock()
 
 	if d.initialized {
-		return errors.New("D1 已经初始化，请勿重复调用 Init")
+		return errors.New("D1 already initialized")
 	}
 
 	var cConfig *C.char
@@ -209,7 +209,7 @@ func (d *D1) Init(configPath string) error {
 
 	ret := C.D1_Init(cConfig)
 	if ret != 0 {
-		return fmt.Errorf("D1_Init 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Init failed, error code: %d", ret)
 	}
 	d.initialized = true
 	return nil
@@ -227,15 +227,15 @@ func (d *D1) Start() error {
 	defer d.mu.Unlock()
 
 	if !d.initialized {
-		return errors.New("D1 尚未初始化，请先调用 Init")
+		return errors.New("D1 not initialized, call Init() first")
 	}
 	if d.started {
-		return errors.New("D1 已经启动，请勿重复调用 Start")
+		return errors.New("D1 already started")
 	}
 
 	ret := C.D1_Start()
 	if ret != 0 {
-		return fmt.Errorf("D1_Start 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Start failed, error code: %d", int(ret))
 	}
 	d.started = true
 	return nil
@@ -259,7 +259,7 @@ func (d *D1) Stop() error {
 	ret := C.D1_Stop()
 	d.started = false
 	if ret != 0 {
-		return fmt.Errorf("D1_Stop 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Stop failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -313,7 +313,7 @@ func (d *D1) Publish(taskID uint64, target, msgName, payload string) error {
 
 	ret := C.D1_Publish(C.uint64_t(taskID), cTarget, cMsgName, cPayload, C.int(len(payload)))
 	if ret != 0 {
-		return fmt.Errorf("D1_Publish 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Publish failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -374,7 +374,7 @@ func (d *D1) Call(taskID uint64, kind int, target, msgName, payload string, time
 		if outError != nil {
 			errMsg = C.GoString(outError)
 		}
-		return "", fmt.Errorf("D1_Call 失败，错误码: %d, 错误信息: %s", int(ret), errMsg)
+		return "", fmt.Errorf("D1_Call failed, error code: %d: %s", int(ret), errMsg)
 	}
 
 	if outPayload == nil {
@@ -432,7 +432,7 @@ func (d *D1) Request(taskID uint64, target, msgName, payload string, timeoutSec 
 		_requestCallbacksMu.Lock()
 		delete(_requestCallbacks, taskID)
 		_requestCallbacksMu.Unlock()
-		return fmt.Errorf("D1_Request 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Request failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -454,7 +454,7 @@ func (d *D1) Reply(taskID uint64, msgName, payload string) error {
 
 	ret := C.D1_Reply(C.uint64_t(taskID), cMsgName, cPayload, C.int(len(payload)))
 	if ret != 0 {
-		return fmt.Errorf("D1_Reply 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Reply failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -487,7 +487,7 @@ func (d *D1) CacheGet(taskID uint64, key string) (string, error) {
 	}()
 
 	if ret != 0 {
-		return "", fmt.Errorf("D1_CacheGet 失败，错误码: %d", int(ret))
+		return "", fmt.Errorf("D1_CacheGet failed, error code: %d", int(ret))
 	}
 
 	if result == nil {
@@ -514,7 +514,7 @@ func (d *D1) CacheSet(taskID uint64, key, value string, ttlSeconds int) error {
 
 	ret := C.D1_CacheSet(C.uint64_t(taskID), cKey, cValue, C.int(len(value)), C.int(ttlSeconds))
 	if ret != 0 {
-		return fmt.Errorf("D1_CacheSet 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_CacheSet failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -533,7 +533,7 @@ func (d *D1) CacheDelete(taskID uint64, key string) error {
 
 	ret := C.D1_CacheDelete(C.uint64_t(taskID), cKey)
 	if ret != 0 {
-		return fmt.Errorf("D1_CacheDelete 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_CacheDelete failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -566,7 +566,7 @@ func (d *D1) DBQuery(taskID uint64, query string) (string, error) {
 	}()
 
 	if ret != 0 {
-		return "", fmt.Errorf("D1_DBQuery 失败，错误码: %d", int(ret))
+		return "", fmt.Errorf("D1_DBQuery failed, error code: %d", int(ret))
 	}
 
 	if result == nil {
@@ -595,7 +595,7 @@ func (d *D1) DBExec(taskID uint64, query string) (int64, error) {
 
 	ret := C.D1_DBExec(C.uint64_t(taskID), cQuery, C.int(len(query)), &affectedRows)
 	if ret != 0 {
-		return 0, fmt.Errorf("D1_DBExec 失败，错误码: %d", int(ret))
+		return 0, fmt.Errorf("D1_DBExec failed, error code: %d", int(ret))
 	}
 
 	return int64(affectedRows), nil
@@ -618,7 +618,7 @@ func (d *D1) Set(taskID uint64, key, value string) error {
 
 	ret := C.D1_Set(C.uint64_t(taskID), cKey, cValue, C.int(len(value)))
 	if ret != 0 {
-		return fmt.Errorf("D1_Set 失败，错误码: %d", int(ret))
+		return fmt.Errorf("D1_Set failed, error code: %d", int(ret))
 	}
 	return nil
 }
@@ -651,7 +651,7 @@ func (d *D1) Get(taskID uint64, key string) (string, error) {
 	}()
 
 	if ret != 0 {
-		return "", fmt.Errorf("D1_Get 失败，错误码: %d", int(ret))
+		return "", fmt.Errorf("D1_Get failed, error code: %d", int(ret))
 	}
 
 	if result == nil {

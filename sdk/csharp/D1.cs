@@ -31,7 +31,7 @@ namespace Genius77.D1
         public string FunctionName { get; }
 
         internal D1Exception(int errorCode, string functionName)
-            : base($"D1 {functionName} 调用失败，错误码: {errorCode}")
+            : base($"D1 {functionName} failed, error code: {errorCode}")
         {
             ErrorCode = errorCode;
             FunctionName = functionName;
@@ -493,7 +493,7 @@ namespace Genius77.D1
         /// 同步调用目标服务，阻塞等待响应。适用于 RPC 风格的请求-回复模式。
         /// </summary>
         /// <param name="taskId">任务 ID。</param>
-        /// <param name="kind">调用类型（如 "rpc"）。</param>
+        /// <param name="kind">处理器类型："default"/"conn"/"script"/"service"/"exec"。</param>
         /// <param name="target">目标标识。</param>
         /// <param name="msgName">消息名称。</param>
         /// <param name="payload">请求负载，可为 null。</param>
