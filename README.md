@@ -13,7 +13,7 @@
 ## 目录结构
 
 ```
-d1-examples/
+d1-sdk/
 ├── README.md                     # 本文件
 ├── VERSION                       # 仓库版本号
 ├── CHANGELOG.md                  # 变更日志
@@ -28,7 +28,7 @@ d1-examples/
 │   ├── router.yaml               # 路由配置
 │   └── ...
 │
-├── sdk/                          # 各语言 SDK 封装（封装 D1 全部 C API）
+├── lang/                          # 各语言 SDK 封装（封装 D1 全部 C API）
 │   ├── c/d1.h                    # C 头文件
 │   ├── cpp/d1.hpp                # C++ RAII 封装
 │   ├── go/d1.go                  # Go cgo 封装
@@ -50,8 +50,8 @@ d1-examples/
 ### 1. Clone 仓库
 
 ```bash
-git clone https://github.com/genius77/d1-examples.git
-cd d1-examples
+git clone https://github.com/genius77/d1-sdk.git
+cd d1-sdk
 ```
 
 ### 2. 下载 D1 动态库
@@ -70,12 +70,12 @@ cd d1-examples
 
 | 语言 | SDK 封装 | 入门示例 | 构建方式 |
 |------|----------|----------|----------|
-| C | [`sdk/c/d1.h`](sdk/c/d1.h) | [`examples/c/01_hello_d1/`](examples/c/01_hello_d1/) | `cmake -B build && cmake --build build` |
-| C++ | [`sdk/cpp/d1.hpp`](sdk/cpp/d1.hpp) | [`examples/cpp/01_hello_d1/`](examples/cpp/01_hello_d1/) | `cmake -B build && cmake --build build` |
-| Go | [`sdk/go/d1.go`](sdk/go/d1.go) | [`examples/go/01_hello_d1/`](examples/go/01_hello_d1/) | `go build` |
-| Python | [`sdk/python/d1.py`](sdk/python/d1.py) | [`examples/python/01_hello_d1/`](examples/python/01_hello_d1/) | `python main.py` |
-| C# | [`sdk/csharp/D1.cs`](sdk/csharp/D1.cs) | [`examples/csharp/01_hello_d1/`](examples/csharp/01_hello_d1/) | `dotnet run` |
-| Java | [`sdk/java/D1.java`](sdk/java/D1.java) | [`examples/java/01_hello_d1/`](examples/java/01_hello_d1/) | `mvn compile exec:java` |
+| C | [`lang/c/d1.h`](lang/c/d1.h) | [`examples/c/01_hello_d1/`](examples/c/01_hello_d1/) | `cmake -B build && cmake --build build` |
+| C++ | [`lang/cpp/d1.hpp`](lang/cpp/d1.hpp) | [`examples/cpp/01_hello_d1/`](examples/cpp/01_hello_d1/) | `cmake -B build && cmake --build build` |
+| Go | [`lang/go/d1.go`](lang/go/d1.go) | [`examples/go/01_hello_d1/`](examples/go/01_hello_d1/) | `go build` |
+| Python | [`lang/python/d1.py`](lang/python/d1.py) | [`examples/python/01_hello_d1/`](examples/python/01_hello_d1/) | `python main.py` |
+| C# | [`lang/csharp/D1.cs`](lang/csharp/D1.cs) | [`examples/csharp/01_hello_d1/`](examples/csharp/01_hello_d1/) | `dotnet run` |
+| Java | [`lang/java/D1.java`](lang/java/D1.java) | [`examples/java/01_hello_d1/`](examples/java/01_hello_d1/) | `mvn compile exec:java` |
 
 ## D1 动态库版本依赖
 
@@ -83,14 +83,14 @@ cd d1-examples
 |-----------|--------------------|------|
 | 0.1.0 | ≥ v1.1.0 | 初始版本 |
 
-> 每个 `sdk/<lang>/d1.{ext}` 文件头部均标注了对应的 D1 动态库最低版本要求。
+> 每个 `lang/<lang>/d1.{ext}` 文件头部均标注了对应的 D1 动态库最低版本要求。
 
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
 
 - 新增某语言示例 → 在 `examples/<lang>/` 下创建新目录
-- SDK 封装改进 → 修改 `sdk/<lang>/` 下对应文件
+- SDK 封装改进 → 修改 `lang/<lang>/` 下对应文件
 - 文档优化 → 编辑对应 README.md
 
 ## License

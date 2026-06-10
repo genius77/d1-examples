@@ -19,8 +19,8 @@ set(D1_DEPS_DIR "${CMAKE_SOURCE_DIR}/../../../deps")
 
 # 头文件搜索路径（优先 deps，其次 SDK）
 include_directories("${D1_DEPS_DIR}")
-include_directories("${CMAKE_SOURCE_DIR}/../../../sdk/cpp")
-include_directories("${CMAKE_SOURCE_DIR}/../../../sdk/c")
+include_directories("${CMAKE_SOURCE_DIR}/../../../lang/cpp")
+include_directories("${CMAKE_SOURCE_DIR}/../../../lang/c")
 
 # 链接目录
 link_directories("${D1_DEPS_DIR}")

@@ -181,7 +181,7 @@ namespace Genius77.D1
         private static extern int D1_Stop();
 
         [DllImport("D1", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void D1_Wait();
+        private static extern void D1_WaitStop();
 
         [DllImport("D1", CallingConvention = CallingConvention.Cdecl)]
         private static extern void D1_SetDefaultHandler(NativeOnRequestFunc handler);
@@ -387,11 +387,12 @@ namespace Genius77.D1
         }
 
         /// <summary>
-        /// 阻塞等待 D1 运行时退出。通常在主线程末尾调用以保持进程存活。
+        /// 阻塞等待退出信号（Ctrl+C），收到信号后自动调用 Stop()。
+        /// 推荐用法: Init() → Start() → WaitStop() → 进程退出
         /// </summary>
-        public static void Wait()
+        public static void WaitStop()
         {
-            D1_Wait();
+            D1_WaitStop();
         }
 
         /// <summary>

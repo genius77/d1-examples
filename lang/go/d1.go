@@ -7,7 +7,7 @@
 //
 // 快速开始:
 //
-//	import d1 "github.com/genius77/d1-examples/sdk/go"
+//	import d1 "github.com/genius77/d1-sdk/lang/go"
 //
 //	d := d1.Default()
 //	if err := d.Init("config.json"); err != nil { ... }
@@ -16,7 +16,7 @@
 //	    // 处理消息
 //	    return []byte("ok"), nil
 //	})
-//	d.Wait()
+//	d.WaitStop()
 package d1
 
 /*
@@ -217,7 +217,7 @@ func (d *D1) Init(configPath string) error {
 
 // Start 启动 D1 运行时。
 //
-// 调用后将进入事件循环，应在 Init 之后、Wait 之前调用。
+// 调用后将进入事件循环，应在 Init 之后、WaitStop 之前调用。
 //
 // 示例:
 //
@@ -243,7 +243,8 @@ func (d *D1) Start() error {
 
 // Stop 停止 D1 运行时并释放相关资源。
 //
-// 调用后 Wait() 将解除阻塞返回。重复调用是安全的。
+// 通常推荐使用 WaitStop() 替代手动调用 Stop + Wait。
+// 重复调用是安全的。
 //
 // 示例:
 //
@@ -264,15 +265,18 @@ func (d *D1) Stop() error {
 	return nil
 }
 
-// Wait 阻塞等待 D1 运行时退出。
+// WaitStop 阻塞等待退出信号，收到信号后自动停止 D1。
 //
-// 通常放在 Start 之后，主 goroutine 将在此阻塞直到 Stop 被调用（通常来自信号处理）。
+// 推荐用法: Init() → Start() → WaitStop() → 进程退出
+//
+// D1_WaitStop 内部监听 SIGINT/SIGTERM (Ctrl+C)，
+// 收到信号后自动调用 D1_Stop()，无需用户手动处理信号。
 //
 // 示例:
 //
-//	d1.Default().Wait()
-func (d *D1) Wait() {
-	C.D1_Wait()
+//	d1.Default().WaitStop()
+func (d *D1) WaitStop() {
+	C.D1_WaitStop()
 }
 
 // SetDefaultHandler 设置默认消息处理器。

@@ -23,10 +23,10 @@ Python 实现的简单规则引擎微服务示例。
 
 ## D1 配置
 
-在 `services.yaml` 中配置：
+在 `service.yaml` 中配置：
 
 ```yaml
 items:
   - name: "rule_engine"
-    command: "python3 ./extensions/services/rule_engine/rule_engine.py"
+    command: "python3 ./extensions/service/rule_engine/rule_engine.py"
 ```

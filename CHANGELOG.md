@@ -1,6 +1,6 @@
 # Changelog
 
-本文档记录 d1-examples 仓库的所有重要变更。
+本文档记录 d1-sdk 仓库的所有重要变更。
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
@@ -10,13 +10,13 @@
 
 ### 新增 ✨
 
-- **SDK 封装层** (`sdk/`)：为 6 种语言提供 D1 全部 17 个 C API 的封装
-  - C 头文件 (`sdk/c/d1.h`)
-  - C++ RAII 封装 (`sdk/cpp/d1.hpp`)
-  - Go cgo 封装 (`sdk/go/d1.go`)
-  - Python ctypes 封装 (`sdk/python/d1.py`)
-  - C# P/Invoke 封装 (`sdk/csharp/D1.cs`)
-  - Java JNA 封装 (`sdk/java/D1.java`)
+- **SDK 封装层** (`lang/`)：为 6 种语言提供 D1 全部 17 个 C API 的封装
+  - C 头文件 (`lang/c/d1.h`)
+  - C++ RAII 封装 (`lang/cpp/d1.hpp`)
+  - Go cgo 封装 (`lang/go/d1.go`)
+  - Python ctypes 封装 (`lang/python/d1.py`)
+  - C# P/Invoke 封装 (`lang/csharp/D1.cs`)
+  - Java JNA 封装 (`lang/java/D1.java`)
 
 - **入门示例** (`examples/`)：每种语言一个最小可运行示例
   - `examples/c/01_hello_d1/` — C 语言入门
@@ -44,4 +44,4 @@
 
 ---
 
-[0.1.0]: https://github.com/genius77/d1-examples/releases/tag/v0.1.0
+[0.1.0]: https://github.com/genius77/d1-sdk/releases/tag/v0.1.0

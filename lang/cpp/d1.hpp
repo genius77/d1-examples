@@ -31,7 +31,7 @@ const char* D1_Version(void);
 int         D1_Init(const char* config_path);
 int         D1_Start(void);
 int         D1_Stop(void);
-void        D1_Wait(void);
+void        D1_WaitStop(void);
 
 typedef int (*D1_OnRequestFunc)(uint64_t task_id, const char* msg_name,
                                 const char* payload, int payload_len,
@@ -140,8 +140,9 @@ public:
         }
     }
 
-    /** Wait - 阻塞等待 D1 完全停止。 */
-    static void Wait() { D1_Wait(); }
+    /** WaitStop - 阻塞等待退出信号，收到信号后自动调用 Stop()。
+     *  推荐用法: Init() → Start() → WaitStop() → 进程退出 */
+    static void WaitStop() { D1_WaitStop(); }
 
     /**
      * SetDefaultHandler - 设置默认消息请求处理器。

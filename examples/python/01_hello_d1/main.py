@@ -8,7 +8,7 @@
   2. 初始化 D1 运行时
   3. 设置默认消息处理器
   4. 启动 D1
-  5. 阻塞等待退出
+  5. 阻塞等待退出（WaitStop 内置信号处理）
 
 使用前请确保已将 libd1.so / libd1.dylib / d1.dll 和 d1.h 放入 deps/ 目录。
 
@@ -21,17 +21,16 @@
 """
 
 import os
-import signal
 import sys
 
 # 将 SDK 目录加入 Python 路径
-# 路径说明: examples/python/01_hello_d1/main.py -> ../../sdk/python/
+# 路径说明: examples/python/01_hello_d1/main.py -> ../../lang/python/
 _sdk_path = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "sdk", "python")
 )
 sys.path.insert(0, _sdk_path)
 
-from d1 import D1, D1Error
+from d1 import D1
 
 
 def default_handler(task_id, msg_name, payload):
@@ -83,20 +82,10 @@ def main():
         d1.start()
         print("D1 启动成功，正在运行... (按 Ctrl+C 退出)")
 
-        # 5. 信号处理: 注册 SIGINT / SIGTERM 处理器
-        def signal_handler(sig, frame):
-            print(f"\n收到信号: {signal.Signals(sig).name}，正在停止 D1...")
-            # 在信号处理器中调用 stop() 会解除 wait() 的阻塞
-            try:
-                d1.stop()
-            except D1Error as e:
-                print(f"D1 停止时出错: {e}")
-
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGTERM, signal_handler)
-
-        # 6. 阻塞等待 D1 退出
-        d1.wait()
+        # 5. 阻塞等待退出
+        #    D1_WaitStop 内部监听 SIGINT/SIGTERM，
+        #    收到 Ctrl+C 后自动调用 stop()，无需手动信号处理
+        d1.wait_stop()
 
     print("D1 已正常退出，示例结束")
 

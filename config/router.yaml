@@ -19,7 +19,7 @@
 #   target     - 目标名称（缺省="master"）
 #                kind=default: 宿主程序目标标识（由宿主程序解释）
 #                kind=conn:    conn 实例名（对应 connector.yaml 中的 name）
-#                kind=script:  脚本名（对应 scripts.yaml 中的 name）
+#                kind=script:  脚本名（对应 script.yaml 中的 name）
 #                kind=service: 服务名
 #                kind=exec:    执行器名
 #   auto_reply - 是否自动回复（可选），缺省使用全局配置

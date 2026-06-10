@@ -4,42 +4,20 @@
  * 本示例演示 D1 C API 的最基本用法:
  *   1. 获取版本号
  *   2. 初始化
- *   3. 启动
- *   4. 设置消息处理器
- *   5. 等待退出信号
- *   6. 停止并等待清理
+ *   3. 设置消息处理器
+ *   4. 启动
+ *   5. 阻塞等待退出（WaitStop 内置信号处理）
  *
  * 编译时需要链接 libd1.so，详见同目录下的 CMakeLists.txt。
  */
 
-#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 /* 引入 D1 SDK 头文件 */
-#include "../../../sdk/c/d1.h"
-
-/* ──────────────────────────────────────────────────────────────────────────
- * 全局状态
- * ────────────────────────────────────────────────────────────────────────── */
-
-/* 退出标志，信号处理函数设置 */
-static volatile int g_running = 1;
-
-/* ──────────────────────────────────────────────────────────────────────────
- * 信号处理
- * ────────────────────────────────────────────────────────────────────────── */
-
-/**
- * on_signal - 处理 SIGINT (Ctrl+C) 和 SIGTERM 信号。
- */
-static void on_signal(int sig) {
-    (void)sig;
-    fprintf(stderr, "\n[信号] 收到退出信号，正在优雅关闭...\n");
-    g_running = 0;
-}
+#include "../../../lang/c/d1.h"
 
 /* ──────────────────────────────────────────────────────────────────────────
  * D1 请求处理器
@@ -113,40 +91,19 @@ int main(int argc, char* argv[]) {
     D1_SetDefaultHandler(on_request);
     printf("[信息] 已设置默认消息处理器\n");
 
-    /* ── 4. 注册信号处理 ── */
-    signal(SIGINT,  on_signal);
-    signal(SIGTERM, on_signal);
-    printf("[信息] 已注册 SIGINT / SIGTERM 信号处理\n");
-
-    /* ── 5. 启动 D1 运行时 ── */
+    /* ── 4. 启动 D1 运行时 ── */
     ret = D1_Start();
     if (ret != 0) {
         fprintf(stderr, "[错误] D1_Start() 失败，返回值: %d\n", ret);
-        D1_Stop();
-        D1_Wait();
         return EXIT_FAILURE;
     }
     printf("[信息] D1_Start() 成功，D1 运行时已启动\n");
 
-    /* ── 6. 主循环：等待退出信号 ── */
+    /* ── 5. 阻塞等待退出信号，自动停止 ── */
+    /* D1_WaitStop 内部监听 SIGINT/SIGTERM (Ctrl+C)，
+       收到信号后自动调用 D1_Stop() 完成优雅退出 */
     printf("[信息] D1 运行中，按 Ctrl+C 退出...\n");
-    while (g_running) {
-        /* 实际应用中可在此处执行其他业务逻辑，或直接使用 sleep */
-        struct timespec ts = { .tv_sec = 0, .tv_nsec = 100000000L }; /* 100ms */
-        nanosleep(&ts, NULL);
-    }
-
-    /* ── 7. 停止 D1 运行时 ── */
-    printf("[信息] 正在停止 D1...\n");
-    ret = D1_Stop();
-    if (ret != 0) {
-        fprintf(stderr, "[错误] D1_Stop() 失败，返回值: %d\n", ret);
-    } else {
-        printf("[信息] D1_Stop() 成功\n");
-    }
-
-    /* ── 8. 等待清理完成 ── */
-    D1_Wait();
+    D1_WaitStop();
     printf("[信息] D1 已完全停止，程序退出。\n");
 
     return EXIT_SUCCESS;

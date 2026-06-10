@@ -33,7 +33,7 @@
     <build>
         <!--
             除本示例源码外，将 SDK 源码目录也加入编译路径。
-            SDK 位于 ../../../sdk/java/ （相对于本 pom.xml 所在目录）。
+            SDK 位于 ../../../lang/java/ （相对于本 pom.xml 所在目录）。
         -->
         <plugins>
             <plugin>
@@ -63,7 +63,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../../../sdk/java</source>
+                                <source>../../../lang/java</source>
                             </sources>
                         </configuration>
                     </execution>

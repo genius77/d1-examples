@@ -27,8 +27,8 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/genius77/d1-examples.git
-cd d1-examples
+git clone https://github.com/genius77/d1-sdk.git
+cd d1-sdk
 ```
 
 ### 2. 下载 D1 动态库
@@ -38,13 +38,13 @@ cd d1-examples
 目录结构应为:
 
 ```
-d1-examples/
+d1-sdk/
 ├── deps/
 │   ├── d1.h
 │   ├── libd1.so        # Linux
 │   ├── libd1.dylib     # macOS
 │   └── d1.dll          # Windows
-├── sdk/
+├── lang/
 │   ├── go/
 │   │   ├── d1.go
 │   │   └── go.mod
@@ -111,12 +111,12 @@ CGO_ENABLED=1 go build -o hello_d1 .
 
 ## SDK 使用说明
 
-详细 API 文档请参阅 SDK 源文件: [`../../sdk/go/d1.go`](../../sdk/go/d1.go)
+详细 API 文档请参阅 SDK 源文件: [`../../lang/go/d1.go`](../../lang/go/d1.go)
 
 ### 基本用法
 
 ```go
-import d1 "github.com/genius77/d1-examples/sdk/go"
+import d1 "github.com/genius77/d1-sdk/lang/go"
 
 func main() {
     // 获取全局单例
@@ -161,7 +161,7 @@ func main() {
     cfg, _ := d.Get(6, "config.name")
 
     // 阻塞等待退出
-    d.Wait()
+    d.WaitStop()
 }
 ```
 

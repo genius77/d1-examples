@@ -60,8 +60,8 @@ interface D1Library extends Library {
      */
     int D1_Stop();
 
-    /** 阻塞等待 D1 运行时退出。 */
-    void D1_Wait();
+    /** 阻塞等待退出信号后自动停止。推荐用法: init() → start() → waitStop() */
+    void D1_WaitStop();
 
     /**
      * 设置默认请求处理器。
@@ -423,10 +423,11 @@ public final class D1 {
     }
 
     /**
-     * 阻塞等待 D1 运行时退出。
+     * 阻塞等待退出信号（Ctrl+C），收到信号后自动调用 stop()。
+     * 推荐用法: init() → start() → waitStop() → 进程退出
      */
-    public static void waitFor() {
-        lib.D1_Wait();
+    public static void waitStop() {
+        lib.D1_WaitStop();
     }
 
     /**

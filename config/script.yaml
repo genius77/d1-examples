@@ -6,7 +6,7 @@
 language: "js"
 
 # 脚本文件根目录（相对于 D1 rootDir）
-path: "./scripts"
+path: "./script"
 
 # 全局入口函数名，缺省="main"
 # 各脚本 item 可覆盖此配置
@@ -25,9 +25,9 @@ pool_max_size: 10
 
 # 脚本列表
 # path 支持三种形式：
-# 1. 缺省: {script.path}/{name}.{language} → ./scripts/temp_alert.js
-# 2. 相对路径: 相对于 script.path，如 "custom/temp_alert.js" → ./scripts/custom/temp_alert.js
-# 3. 绝对路径: 直接使用，如 "/opt/d1/scripts/temp_alert.js"
+# 1. 缺省: {script.path}/{name}.{language} → ./script/temp_alert.js
+# 2. 相对路径: 相对于 script.path，如 "custom/temp_alert.js" → ./script/custom/temp_alert.js
+# 3. 绝对路径: 直接使用，如 "/opt/d1/script/temp_alert.js"
 # 最终都转换为绝对路径存储
 #
 # entry: 入口函数名，缺省使用全局 entry 配置
@@ -36,7 +36,7 @@ pool_max_size: 10
 #   - false: 首次执行时加载，按需编译
 items:
   - name: "temp_alert"
-    # path 缺省: 自动使用 ./scripts/temp_alert.js
+    # path 缺省: 自动使用 ./script/temp_alert.js
     preload: true   # 预加载，启动时编译缓存
 
   - name: "api_handler"
@@ -46,7 +46,7 @@ items:
 
   - name: "data_processor"
     # 绝对路径示例
-    path: "/opt/d1/scripts/data_processor.js"
+    path: "/opt/d1/script/data_processor.js"
     preload: true
     # entry 覆盖全局配置
     entry: "process"

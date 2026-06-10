@@ -20,11 +20,11 @@ curl http://localhost:9091/delete/key
 
 ## D1 配置
 
-在 `services.yaml` 中配置：
+在 `service.yaml` 中配置：
 
 ```yaml
 items:
   - name: "cache_service"
-    command: "./extensions/services/cache_service/cache_service.sh"
+    command: "./extensions/service/cache_service/cache_service.sh"
     args: ["{{service_port}}"]
 ```

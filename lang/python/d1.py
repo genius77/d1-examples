@@ -27,8 +27,8 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/genius77/d1-examples.git
-cd d1-examples
+git clone https://github.com/genius77/d1-sdk.git
+cd d1-sdk
 ```
 
 ### 2. 下载 D1 动态库
@@ -38,13 +38,13 @@ cd d1-examples
 目录结构应为:
 
 ```
-d1-examples/
+d1-sdk/
 ├── deps/
 │   ├── d1.h
 │   ├── libd1.so        # Linux
 │   ├── libd1.dylib     # macOS
 │   └── d1.dll          # Windows
-├── sdk/
+├── lang/
 │   ├── go/
 │   │   ├── d1.go
 │   │   └── go.mod
@@ -112,12 +112,12 @@ CGO_ENABLED=1 go build -o hello_d1 .
 
 ## SDK 使用说明
 
-详细 API 文档请参阅 SDK 源文件: [`../../sdk/go/d1.go`](../../sdk/go/d1.go)
+详细 API 文档请参阅 SDK 源文件: [`../../lang/go/d1.go`](../../lang/go/d1.go)
 
 ### 基本用法
 
 ```go
-import d1 "github.com/genius77/d1-examples/sdk/go"
+import d1 "github.com/genius77/d1-sdk/lang/go"
 
 func main() {
     // 获取全局单例
@@ -162,7 +162,7 @@ func main() {
     cfg, _ := d.Get(6, "config.name")
 
     // 阻塞等待退出
-    d.Wait()
+    d.WaitStop()
 }
 ```
 
@@ -227,7 +227,7 @@ D1 SDK Python 封装 | 对应 D1 动态库版本: >= v1.1.0
         print("版本:", d1.version())
         d1.init(None)
         d1.start()
-        d1.wait()
+        d1.wait_stop()
 """
 
 import ctypes
@@ -262,7 +262,7 @@ else:
     raise RuntimeError(f"Unsupported OS: {_SYSTEM}")
 
 # SDK 文件所在目录的 deps 路径
-# sdk/python/d1.py -> ../../deps/
+# lang/python/d1.py -> ../../deps/
 _SDK_DIR = os.path.dirname(os.path.abspath(__file__))
 _DEPS_DIR = os.path.normpath(os.path.join(_SDK_DIR, "..", "..", "deps"))
 _LIB_PATH = os.path.join(_DEPS_DIR, _LIBNAME)
@@ -332,9 +332,9 @@ _lib.D1_Start.restype = c_int
 _lib.D1_Stop.argtypes = []
 _lib.D1_Stop.restype = c_int
 
-# 5. D1_Wait(void) -> void
-_lib.D1_Wait.argtypes = []
-_lib.D1_Wait.restype = None
+# 5. D1_WaitStop(void) -> void
+_lib.D1_WaitStop.argtypes = []
+_lib.D1_WaitStop.restype = None
 
 # 6. D1_SetDefaultHandler(handler) -> void
 _lib.D1_SetDefaultHandler.argtypes = [D1_HANDLER_CB]
@@ -429,7 +429,7 @@ class D1:
             d1.init("config.yaml")
             d1.start()
             d1.set_default_handler(my_handler)
-            d1.wait()
+            d1.wait_stop()
 
     或手动管理生命周期:
         d1 = D1()
@@ -538,12 +538,13 @@ class D1:
 
     # === 5. Wait ===
 
-    def wait(self):
-        """阻塞等待 D1 运行时退出。
+    def wait_stop(self):
+        """阻塞等待退出信号（Ctrl+C），收到信号后自动调用 stop()。
 
-        通常在 start() 之后调用，会阻塞当前线程直到 stop() 被调用。
+        推荐用法: init() → start() → wait_stop() → 进程退出
+        D1_WaitStop 内部监听 SIGINT/SIGTERM，无需用户手动处理信号。
         """
-        _lib.D1_Wait()
+        _lib.D1_WaitStop()
 
     # === 6. SetDefaultHandler ===
 

@@ -159,6 +159,6 @@ router: "router.yaml"
 # 对象/map 值 = 内联配置
 # ============================================================
 default_timeout: 180      # 扩展调用默认超时时间（秒），缺省 180
-scripts: "scripts.yaml"   # 脚本配置（可选）
-execs: "execs.yaml"       # 执行任务配置（可选）
-services: "services.yaml" # 微服务配置（可选）
+script: "script.yaml"   # 脚本配置（可选）
+exec: "exec.yaml"       # 执行任务配置（可选）
+service: "service.yaml" # 微服务配置（可选）
